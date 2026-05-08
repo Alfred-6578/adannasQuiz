@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSS Quiz — id & class</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #16161a;
+      --border: #2a2a32;
+      --amber: #f5a623;
+      --amber-dim: rgba(245,166,35,0.12);
+      --green: #4ade80;
+      --green-dim: rgba(74,222,128,0.12);
+      --red: #f87171;
+      --red-dim: rgba(248,113,113,0.12);
+      --blue: #60a5fa;
+      --text: #e8e8f0;
+      --muted: #7a7a8c;
+      --code-bg: #111118;
+      --radius: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 40px 20px 80px;
+    }
+
+    /* HEADER */
+    .header {
+      max-width: 740px;
+      margin: 0 auto 48px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--amber);
+      background: var(--amber-dim);
+      border: 1px solid rgba(245,166,35,0.3);
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    h1 span { color: var(--amber); }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* PROGRESS */
+    .progress-wrap {
+      max-width: 740px;
+      margin: 0 auto 36px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--amber), #f97316);
+      border-radius: 100px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* SECTION TITLE */
+    .section-title {
+      max-width: 740px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* QUESTION CARD */
+    .quiz-wrap {
+      max-width: 740px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.2s;
+      animation: slideUp 0.4s ease both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(1)  { animation-delay: 0.05s }
+    .card:nth-child(2)  { animation-delay: 0.1s }
+    .card:nth-child(3)  { animation-delay: 0.15s }
+    .card:nth-child(4)  { animation-delay: 0.2s }
+    .card:nth-child(5)  { animation-delay: 0.25s }
+    .card:nth-child(6)  { animation-delay: 0.3s }
+    .card:nth-child(7)  { animation-delay: 0.35s }
+    .card:nth-child(8)  { animation-delay: 0.4s }
+
+    .card.correct  { border-color: var(--green); background: linear-gradient(135deg, var(--surface), rgba(74,222,128,0.04)); }
+    .card.wrong    { border-color: var(--red);   background: linear-gradient(135deg, var(--surface), rgba(248,113,113,0.04)); }
+
+    .q-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .q-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 3px 9px;
+      border-radius: 6px;
+    }
+
+    .q-type {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 6px;
+    }
+
+    .type-tf   { background: rgba(96,165,250,0.1);  color: var(--blue);  border: 1px solid rgba(96,165,250,0.2); }
+    .type-mc   { background: rgba(167,139,250,0.1); color: #c4b5fd;      border: 1px solid rgba(167,139,250,0.2);}
+    .type-fix  { background: rgba(251,191,36,0.1);  color: #fbbf24;      border: 1px solid rgba(251,191,36,0.2); }
+    .type-fill { background: rgba(52,211,153,0.1);  color: #34d399;      border: 1px solid rgba(52,211,153,0.2); }
+    .type-sa   { background: rgba(251,113,133,0.1); color: #fb7185;      border: 1px solid rgba(251,113,133,0.2);}
+
+    .question {
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.6;
+      color: var(--text);
+      margin-bottom: 18px;
+    }
+
+    /* TRUE / FALSE */
+    .tf-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .tf-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tf-btn:hover:not(:disabled) { border-color: var(--amber); color: var(--amber); }
+    .tf-btn.selected { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+    .tf-btn.correct-ans { border-color: var(--green) !important; color: var(--green) !important; background: var(--green-dim) !important; }
+    .tf-btn.wrong-ans   { border-color: var(--red)   !important; color: var(--red)   !important; background: var(--red-dim)   !important; }
+
+    /* MULTIPLE CHOICE */
+    .mc-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mc-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .mc-btn .letter {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--border);
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+
+    .mc-btn:hover:not(:disabled) { border-color: var(--amber); }
+    .mc-btn:hover:not(:disabled) .letter { background: var(--amber); color: #000; }
+    .mc-btn.selected { border-color: var(--amber); background: var(--amber-dim); }
+    .mc-btn.selected .letter { background: var(--amber); color: #000; }
+    .mc-btn.correct-ans { border-color: var(--green) !important; background: var(--green-dim) !important; }
+    .mc-btn.correct-ans .letter { background: var(--green) !important; color: #000 !important; }
+    .mc-btn.wrong-ans   { border-color: var(--red)   !important; background: var(--red-dim)   !important; }
+    .mc-btn.wrong-ans   .letter { background: var(--red)   !important; color: #000 !important; }
+
+    /* CODE BLOCK - FIX THE ERROR */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+      color: #a9b1d6;
+      margin-bottom: 14px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .code-block .kw  { color: #bb9af7; }
+    .code-block .str { color: #9ece6a; }
+    .code-block .tag { color: #7aa2f7; }
+    .code-block .attr{ color: #e0af68; }
+    .code-block .val { color: #9ece6a; }
+    .code-block .prop{ color: #7dcfff; }
+
+    .inline-input {
+      display: inline-block;
+      background: rgba(245,166,35,0.08);
+      border: 1.5px solid var(--amber);
+      border-radius: 5px;
+      padding: 1px 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--amber);
+      width: auto;
+      min-width: 80px;
+      outline: none;
+      transition: all 0.15s;
+      vertical-align: middle;
+    }
+
+    .inline-input:focus { background: rgba(245,166,35,0.15); box-shadow: 0 0 0 2px rgba(245,166,35,0.2); }
+    .inline-input.correct-inp { border-color: var(--green) !important; color: var(--green) !important; background: var(--green-dim) !important; }
+    .inline-input.wrong-inp   { border-color: var(--red)   !important; color: var(--red)   !important; background: var(--red-dim)   !important; }
+
+    /* FILL IN THE BLANK */
+    .fill-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 15px;
+      line-height: 2;
+    }
+
+    .fill-input {
+      background: var(--bg);
+      border: 1.5px solid var(--amber);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      color: var(--amber);
+      min-width: 100px;
+      outline: none;
+      transition: all 0.15s;
+    }
+
+    .fill-input:focus { box-shadow: 0 0 0 2px rgba(245,166,35,0.2); }
+    .fill-input.correct-inp { border-color: var(--green) !important; color: var(--green) !important; background: var(--green-dim) !important; }
+    .fill-input.wrong-inp   { border-color: var(--red)   !important; color: var(--red)   !important; background: var(--red-dim)   !important; }
+
+    /* SHORT ANSWER */
+    textarea.sa-input {
+      width: 100%;
+      min-height: 90px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+      line-height: 1.6;
+    }
+
+    textarea.sa-input:focus { border-color: var(--amber); }
+
+    /* CHECK BUTTON */
+    .check-btn {
+      margin-top: 14px;
+      padding: 9px 20px;
+      background: var(--amber);
+      color: #000;
+      border: none;
+      border-radius: 7px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .check-btn:hover { background: #ffc043; transform: translateY(-1px); }
+    .check-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+    /* FEEDBACK */
+    .feedback {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .feedback.show { display: block; }
+    .feedback.ok  { background: var(--green-dim); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+    .feedback.bad { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(248,113,113,0.25); }
+
+    .feedback strong { font-weight: 600; }
+
+    /* SUBMIT */
+    .submit-wrap {
+      max-width: 740px;
+      margin: 40px auto 0;
+      text-align: center;
+    }
+
+    .submit-btn {
+      padding: 16px 48px;
+      background: linear-gradient(135deg, var(--amber), #f97316);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 8px 24px rgba(245,166,35,0.3);
+    }
+
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(245,166,35,0.4); }
+
+    /* RESULT */
+    .result-card {
+      max-width: 740px;
+      margin: 40px auto 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      text-align: center;
+      display: none;
+    }
+
+    .result-card.show { display: block; animation: slideUp 0.4s ease; }
+
+    .score-big {
+      font-family: 'Syne', sans-serif;
+      font-size: 5rem;
+      font-weight: 800;
+      color: var(--amber);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .score-label {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .result-msg {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      background: rgba(255,255,255,0.06);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--amber);
+    }
+
+    hr.section-gap {
+      border: none;
+      border-top: 1px solid var(--border);
+      max-width: 740px;
+      margin: 32px auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge">HTML & CSS · Quiz</div>
+    <h1>id <span>&</span> class</h1>
+    <p class="subtitle">Answer all 15 questions carefully. No Googling. No W3Schools. Just you. 🙂</p>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span id="prog-text">0 / 14 answered</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+  </div>
+
+  <!-- ── SECTION 1: TRUE / FALSE ── -->
+  <div class="section-title" style="max-width:740px;margin:0 auto 16px;">True or False</div>
+  <div class="quiz-wrap" id="quiz-wrap">
+
+    <!-- Q1 -->
+    <div class="card" data-q="1" data-type="tf" data-answer="false">
+      <div class="q-meta">
+        <span class="q-num">Q1</span>
+        <span class="q-type type-tf">True / False</span>
+      </div>
+      <div class="question">Two different elements on the same page can share the same <code>id</code>.</div>
+      <div class="tf-options">
+        <button class="tf-btn" onclick="selectTF(this,1,'true')">True</button>
+        <button class="tf-btn" onclick="selectTF(this,1,'false')">False</button>
+      </div>
+      <div class="feedback" id="fb-1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="card" data-q="2" data-type="tf" data-answer="false">
+      <div class="q-meta">
+        <span class="q-num">Q2</span>
+        <span class="q-type type-tf">True / False</span>
+      </div>
+      <div class="question">In CSS, a <code>class</code> selector uses the <code>#</code> symbol.</div>
+      <div class="tf-options">
+        <button class="tf-btn" onclick="selectTF(this,2,'true')">True</button>
+        <button class="tf-btn" onclick="selectTF(this,2,'false')">False</button>
+      </div>
+      <div class="feedback" id="fb-2"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="card" data-q="3" data-type="tf" data-answer="true">
+      <div class="q-meta">
+        <span class="q-num">Q3</span>
+        <span class="q-type type-tf">True / False</span>
+      </div>
+      <div class="question">One HTML element can have more than one class at the same time.</div>
+      <div class="tf-options">
+        <button class="tf-btn" onclick="selectTF(this,3,'true')">True</button>
+        <button class="tf-btn" onclick="selectTF(this,3,'false')">False</button>
+      </div>
+      <div class="feedback" id="fb-3"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="card" data-q="4" data-type="tf" data-answer="true">
+      <div class="q-meta">
+        <span class="q-num">Q4</span>
+        <span class="q-type type-tf">True / False</span>
+      </div>
+      <div class="question">You can use an <code>id</code> to jump to a specific section on the same page using a link.</div>
+      <div class="tf-options">
+        <button class="tf-btn" onclick="selectTF(this,4,'true')">True</button>
+        <button class="tf-btn" onclick="selectTF(this,4,'false')">False</button>
+      </div>
+      <div class="feedback" id="fb-4"></div>
+    </div>
+
+  </div>
+
+  <hr class="section-gap"/>
+
+  <!-- ── SECTION 2: MULTIPLE CHOICE ── -->
+  <div class="section-title" style="max-width:740px;margin:0 auto 16px;">Multiple Choice</div>
+  <div class="quiz-wrap">
+
+    <!-- Q5 -->
+    <div class="card" data-q="5" data-type="mc" data-answer="b">
+      <div class="q-meta"><span class="q-num">Q5</span><span class="q-type type-mc">Multiple Choice</span></div>
+      <div class="question">Which of these correctly selects a <code>class</code> in CSS?</div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="selectMC(this,5,'a')"><span class="letter">A</span> #box</button>
+        <button class="mc-btn" onclick="selectMC(this,5,'b')"><span class="letter">B</span> .box</button>
+        <button class="mc-btn" onclick="selectMC(this,5,'c')"><span class="letter">C</span> *box</button>
+        <button class="mc-btn" onclick="selectMC(this,5,'d')"><span class="letter">D</span> @box</button>
+      </div>
+      <div class="feedback" id="fb-5"></div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="card" data-q="6" data-type="mc" data-answer="c">
+      <div class="q-meta"><span class="q-num">Q6</span><span class="q-type type-mc">Multiple Choice</span></div>
+      <div class="question">Which of these correctly selects an <code>id</code> in CSS?</div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="selectMC(this,6,'a')"><span class="letter">A</span> .hero</button>
+        <button class="mc-btn" onclick="selectMC(this,6,'b')"><span class="letter">B</span> *hero</button>
+        <button class="mc-btn" onclick="selectMC(this,6,'c')"><span class="letter">C</span> #hero</button>
+        <button class="mc-btn" onclick="selectMC(this,6,'d')"><span class="letter">D</span> @hero</button>
+      </div>
+      <div class="feedback" id="fb-6"></div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="card" data-q="7" data-type="mc" data-answer="b">
+      <div class="q-meta"><span class="q-num">Q7</span><span class="q-type type-mc">Multiple Choice</span></div>
+      <div class="question">You have three paragraphs that should all have the same blue color. What should you use?</div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="selectMC(this,7,'a')"><span class="letter">A</span> Give all three the same <code>id</code></button>
+        <button class="mc-btn" onclick="selectMC(this,7,'b')"><span class="letter">B</span> Give all three the same <code>class</code></button>
+        <button class="mc-btn" onclick="selectMC(this,7,'c')"><span class="letter">C</span> Give each one a different <code>id</code></button>
+        <button class="mc-btn" onclick="selectMC(this,7,'d')"><span class="letter">D</span> It doesn't matter, both work the same</button>
+      </div>
+      <div class="feedback" id="fb-7"></div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="card" data-q="8" data-type="mc" data-answer="c">
+      <div class="q-meta"><span class="q-num">Q8</span><span class="q-type type-mc">Multiple Choice</span></div>
+      <div class="question">Which attribute on a <code>&lt;label&gt;</code> is used to connect it to an <code>&lt;input&gt;</code> using <code>id</code>?</div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="selectMC(this,8,'a')"><span class="letter">A</span> class</button>
+        <button class="mc-btn" onclick="selectMC(this,8,'b')"><span class="letter">B</span> name</button>
+        <button class="mc-btn" onclick="selectMC(this,8,'c')"><span class="letter">C</span> for</button>
+        <button class="mc-btn" onclick="selectMC(this,8,'d')"><span class="letter">D</span> link</button>
+      </div>
+      <div class="feedback" id="fb-8"></div>
+    </div>
+
+  </div>
+
+  <hr class="section-gap"/>
+
+  <!-- ── SECTION 3: FIX THE ERROR ── -->
+  <div class="section-title" style="max-width:740px;margin:0 auto 16px;">Fix the Error</div>
+  <div class="quiz-wrap">
+
+    <!-- Q9 -->
+    <div class="card" data-q="9" data-type="fix">
+      <div class="q-meta"><span class="q-num">Q9</span><span class="q-type type-fix">Fix the Error</span></div>
+      <div class="question">There is a mistake in the HTML below. Fix the highlighted part.</div>
+      <div class="code-block"><span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="val">"box"</span> <span class="attr">id</span>=<span class="val">"<input class="inline-input" id="fix-9" placeholder="fix here" style="width:60px"/>"</span><span class="tag">&gt;</span>Hello<span class="tag">&lt;/div&gt;</span></div>
+      <button class="check-btn" onclick="checkFix(9,'class')">Check Answer</button>
+      <div class="feedback" id="fb-9"></div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="card" data-q="10" data-type="fix">
+      <div class="q-meta"><span class="q-num">Q10</span><span class="q-type type-fix">Fix the Error</span></div>
+      <div class="question">There is a mistake in the CSS below. Fix the highlighted part.</div>
+      <div class="code-block"><span class="prop">.title</span> {
+  <input class="inline-input" id="fix-10" placeholder="fix here" style="width:90px"/>: <span class="val">blue</span>;
+}</div>
+      <button class="check-btn" onclick="checkFix(10,'color')">Check Answer</button>
+      <div class="feedback" id="fb-10"></div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="card" data-q="11" data-type="fix">
+      <div class="q-meta"><span class="q-num">Q11</span><span class="q-type type-fix">Fix the Error</span></div>
+      <div class="question">This link should jump to the <code>#contact</code> section on the page but it doesn't work. Fix the highlighted part.</div>
+      <div class="code-block"><span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"<input class="inline-input" id="fix-11" placeholder="fix here" style="width:110px"/>"</span><span class="tag">&gt;</span>Go to Contact<span class="tag">&lt;/a&gt;</span></div>
+      <button class="check-btn" onclick="checkFix(11,'#contact')">Check Answer</button>
+      <div class="feedback" id="fb-11"></div>
+    </div>
+
+  </div>
+
+  <hr class="section-gap"/>
+
+  <!-- ── SECTION 4: FILL IN THE BLANK ── -->
+  <div class="section-title" style="max-width:740px;margin:0 auto 16px;">Fill in the Blank</div>
+  <div class="quiz-wrap">
+
+    <!-- Q12 -->
+    <div class="card" data-q="12" data-type="fill">
+      <div class="q-meta"><span class="q-num">Q12</span><span class="q-type type-fill">Fill in the Blank</span></div>
+      <div class="question">To style an <code>id</code> in CSS, you write <input class="fill-input" id="fill-12" placeholder="symbol"/> before the name.</div>
+      <button class="check-btn" onclick="checkFill(12,'#')">Check Answer</button>
+      <div class="feedback" id="fb-12"></div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="card" data-q="13" data-type="fill">
+      <div class="q-meta"><span class="q-num">Q13</span><span class="q-type type-fill">Fill in the Blank</span></div>
+      <div class="question">To style a <code>class</code> in CSS, you write <input class="fill-input" id="fill-13" placeholder="symbol"/> before the name.</div>
+      <button class="check-btn" onclick="checkFill(13,'.')">Check Answer</button>
+      <div class="feedback" id="fb-13"></div>
+    </div>
+
+    <!-- Q14 -->
+    <div class="card" data-q="14" data-type="fill">
+      <div class="q-meta"><span class="q-num">Q14</span><span class="q-type type-fill">Fill in the Blank</span></div>
+      <div class="question">An <code>id</code> must be <input class="fill-input" id="fill-14" placeholder="word" style="min-width:120px"/> on the page — no two elements can share it.</div>
+      <button class="check-btn" onclick="checkFill(14,'unique')">Check Answer</button>
+      <div class="feedback" id="fb-14"></div>
+    </div>
+
+  </div>
+
+  <hr class="section-gap"/>
+
+  <!-- ── SECTION 5: SHORT ANSWER ── -->
+  <div class="section-title" style="max-width:740px;margin:0 auto 16px;">Short Answer</div>
+  <div class="quiz-wrap">
+
+    <div class="card" data-q="15" data-type="sa">
+      <div class="q-meta"><span class="q-num">Q15</span><span class="q-type type-sa">Short Answer</span></div>
+      <div class="question">In your own words, explain the difference between an <code>id</code> and a <code>class</code> in HTML and CSS.</div>
+      <textarea class="sa-input" id="sa-15" placeholder="Write your answer here..."></textarea>
+    </div>
+
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitQuiz()">Submit Quiz →</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="result-card">
+    <div class="score-big" id="score-big">—</div>
+    <div class="score-label" id="score-label">out of 14 auto-graded questions</div>
+    <div class="result-msg" id="result-msg"></div>
+  </div>
+
+<script>
+  const answers = {};
+  const checked = {};
+  const totalAuto = 14;
+
+  function updateProgress() {
+    const done = Object.keys(answers).length;
+    const pct = Math.round((done / totalAuto) * 100);
+    document.getElementById('prog-text').textContent = `${done} / ${totalAuto} answered`;
+    document.getElementById('prog-pct').textContent = `${pct}%`;
+    document.getElementById('prog-fill').style.width = pct + '%';
+  }
+
+  /* TRUE / FALSE */
+  function selectTF(btn, qNum, val) {
+    if (checked[qNum]) return;
+    const card = btn.closest('.card');
+    card.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    const correct = card.dataset.answer;
+    answers[qNum] = val;
+    updateProgress();
+
+    checked[qNum] = true;
+    card.querySelectorAll('.tf-btn').forEach(b => {
+      const bVal = b.textContent.toLowerCase() === 'true' ? 'true' : 'false';
+      if (bVal === correct) b.classList.add('correct-ans');
+      else if (bVal === val && val !== correct) b.classList.add('wrong-ans');
+      b.disabled = true;
+    });
+
+    const fb = document.getElementById('fb-' + qNum);
+    if (val === correct) {
+      fb.className = 'feedback ok show';
+      fb.innerHTML = '✓ <strong>Correct!</strong>';
+      card.classList.add('correct');
+    } else {
+      fb.className = 'feedback bad show';
+      fb.innerHTML = `✗ <strong>Wrong.</strong> The correct answer is <strong>${correct === 'true' ? 'True' : 'False'}</strong>.`;
+      card.classList.add('wrong');
+    }
+  }
+
+  /* MULTIPLE CHOICE */
+  function selectMC(btn, qNum, val) {
+    if (checked[qNum]) return;
+    const card = btn.closest('.card');
+    card.querySelectorAll('.mc-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    const correct = card.dataset.answer;
+    answers[qNum] = val;
+    updateProgress();
+
+    checked[qNum] = true;
+    const letters = ['a','b','c','d'];
+    card.querySelectorAll('.mc-btn').forEach((b, i) => {
+      if (letters[i] === correct) b.classList.add('correct-ans');
+      else if (letters[i] === val && val !== correct) b.classList.add('wrong-ans');
+      b.disabled = true;
+    });
+
+    const fb = document.getElementById('fb-' + qNum);
+    if (val === correct) {
+      fb.className = 'feedback ok show';
+      fb.innerHTML = '✓ <strong>Correct!</strong>';
+      card.classList.add('correct');
+    } else {
+      fb.className = 'feedback bad show';
+      fb.innerHTML = `✗ <strong>Wrong.</strong> The correct answer is option <strong>${correct.toUpperCase()}</strong>.`;
+      card.classList.add('wrong');
+    }
+  }
+
+  /* FIX THE ERROR */
+  function checkFix(qNum, correctAnswer) {
+    if (checked[qNum]) return;
+    const input = document.getElementById('fix-' + qNum);
+    const val = input.value.trim().toLowerCase();
+    const correct = correctAnswer.toLowerCase();
+    const isRight = val === correct;
+
+    checked[qNum] = true;
+    answers[qNum] = val;
+    updateProgress();
+
+    input.disabled = true;
+    input.classList.add(isRight ? 'correct-inp' : 'wrong-inp');
+
+    const card = input.closest('.card');
+    card.classList.add(isRight ? 'correct' : 'wrong');
+    card.querySelector('.check-btn').disabled = true;
+
+    const fb = document.getElementById('fb-' + qNum);
+    if (isRight) {
+      fb.className = 'feedback ok show';
+      fb.innerHTML = `✓ <strong>Correct!</strong>`;
+    } else {
+      fb.className = 'feedback bad show';
+      fb.innerHTML = `✗ <strong>Wrong.</strong> The correct answer is <code>${correctAnswer}</code>.`;
+    }
+  }
+
+  /* FILL IN THE BLANK */
+  function checkFill(qNum, correctAnswer) {
+    if (checked[qNum]) return;
+    const input = document.getElementById('fill-' + qNum);
+    const val = input.value.trim().toLowerCase();
+    const correct = correctAnswer.toLowerCase();
+    const isRight = val === correct;
+
+    checked[qNum] = true;
+    answers[qNum] = val;
+    updateProgress();
+
+    input.disabled = true;
+    input.classList.add(isRight ? 'correct-inp' : 'wrong-inp');
+
+    const card = input.closest('.card');
+    card.classList.add(isRight ? 'correct' : 'wrong');
+    card.querySelector('.check-btn').disabled = true;
+
+    const fb = document.getElementById('fb-' + qNum);
+    if (isRight) {
+      fb.className = 'feedback ok show';
+      fb.innerHTML = `✓ <strong>Correct!</strong>`;
+    } else {
+      fb.className = 'feedback bad show';
+      fb.innerHTML = `✗ <strong>Wrong.</strong> The answer is <code>${correctAnswer}</code>.`;
+    }
+  }
+
+  /* SUBMIT */
+  function submitQuiz() {
+    let score = 0;
+    for (let q = 1; q <= totalAuto; q++) {
+      if (!checked[q]) continue;
+      const card = document.querySelector(`[data-q="${q}"]`);
+      const type = card ? card.dataset.type : '';
+      if (type === 'tf' || type === 'mc') {
+        if (answers[q] === card.dataset.answer) score++;
+      } else if (type === 'fix' || type === 'fill') {
+        if (card.classList.contains('correct')) score++;
+      }
+    }
+
+    const sa = document.getElementById('sa-15').value.trim();
+    const resultCard = document.getElementById('result-card');
+    resultCard.classList.add('show');
+    document.getElementById('score-big').textContent = score + '/' + totalAuto;
+
+    let msg = '';
+    if (score >= 12) msg = '🔥 Excellent work! You clearly understand id and class.';
+    else if (score >= 9) msg = '👍 Good effort! A few things to review but you\'re on the right track.';
+    else if (score >= 6) msg = '📚 You need to go back and review — some key concepts are missing.';
+    else msg = '⚠️ We\'re going through this again in our next class.';
+
+    if (!sa) msg += '<br><br><span style="color:var(--muted);font-size:13px;">Note: Question 15 (short answer) was left blank.</span>';
+
+    document.getElementById('result-msg').innerHTML = msg;
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+</script>
+</body>
+</html>
